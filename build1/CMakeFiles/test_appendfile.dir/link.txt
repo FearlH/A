@@ -1,1 +1,0 @@
-/usr/bin/g++  -g   CMakeFiles/test_appendfile.dir/src/base/test/test_appendfile.cpp.o CMakeFiles/test_appendfile.dir/src/base/AppendFile.cpp.o  -o test_appendfile  -lpthread 

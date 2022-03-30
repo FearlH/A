@@ -1,2 +1,0 @@
-/usr/bin/ar qc libappendlog.a  CMakeFiles/appendlog.dir/src/base/AppendFile.cpp.o
-/usr/bin/ranlib libappendlog.a

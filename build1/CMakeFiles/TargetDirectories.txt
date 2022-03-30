@@ -1,3 +1,0 @@
-/home/greatsnow/CODE/CODE3/MUDUO3/A/build/CMakeFiles/rebuild_cache.dir
-/home/greatsnow/CODE/CODE3/MUDUO3/A/build/CMakeFiles/edit_cache.dir
-/home/greatsnow/CODE/CODE3/MUDUO3/A/build/CMakeFiles/baselib.dir

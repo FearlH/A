@@ -1,1 +1,0 @@
-/usr/bin/g++  -g   CMakeFiles/test_rollfile.dir/src/base/test/test_rollfile.cpp.o CMakeFiles/test_rollfile.dir/src/base/AppendFile.cpp.o CMakeFiles/test_rollfile.dir/src/base/RollFile.cpp.o CMakeFiles/test_rollfile.dir/src/base/ProcessInfo.cpp.o  -o test_rollfile  -lpthread 

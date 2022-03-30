@@ -1,2 +1,0 @@
-/usr/bin/ar qc libLogging.a  CMakeFiles/Logging.dir/src/base/Logging.cpp.o CMakeFiles/Logging.dir/src/base/Timestamp.cpp.o CMakeFiles/Logging.dir/src/base/LogStream.cpp.o
-/usr/bin/ranlib libLogging.a
