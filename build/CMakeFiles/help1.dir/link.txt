@@ -1,1 +1,0 @@
-/usr/bin/g++  -g   CMakeFiles/help1.dir/src/base/test/help.cpp.o  -o help1 

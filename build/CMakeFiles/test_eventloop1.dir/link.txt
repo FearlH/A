@@ -1,1 +1,0 @@
-/usr/bin/g++  -g   CMakeFiles/test_eventloop1.dir/src/net/old/test/test_eventloop1.cpp.o CMakeFiles/test_eventloop1.dir/src/net/old/EventLoop1.cpp.o  -o test_eventloop1  -lpthread libbaselib.a -lpthread 
