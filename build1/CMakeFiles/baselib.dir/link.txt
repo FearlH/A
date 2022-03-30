@@ -1,0 +1,2 @@
+/usr/bin/ar qc libbaselib.a  CMakeFiles/baselib.dir/src/base/AsyncLog.cpp.o CMakeFiles/baselib.dir/src/base/AppendFile.cpp.o CMakeFiles/baselib.dir/src/base/CountDownLatch.cpp.o CMakeFiles/baselib.dir/src/base/LogStream.cpp.o CMakeFiles/baselib.dir/src/base/ProcessInfo.cpp.o CMakeFiles/baselib.dir/src/base/RollFile.cpp.o CMakeFiles/baselib.dir/src/base/Timestamp.cpp.o CMakeFiles/baselib.dir/src/base/Date.cpp.o CMakeFiles/baselib.dir/src/base/Logging.cpp.o CMakeFiles/baselib.dir/src/base/ThreadPool.cpp.o
+/usr/bin/ranlib libbaselib.a

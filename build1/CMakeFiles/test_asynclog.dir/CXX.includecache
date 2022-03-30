@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/Timestamp.h
+inttypes.h
+-
+string
+-
+
+/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/Timestamp.cpp
+Timestamp.h
+/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/Timestamp.h
+sys/time.h
+-
+string.h
+-
+stdio.h
+-
+

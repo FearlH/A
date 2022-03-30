@@ -1,0 +1,2 @@
+/usr/bin/ar qc libTimeZone.a  CMakeFiles/TimeZone.dir/src/base/TimeZone.cpp.o CMakeFiles/TimeZone.dir/src/base/Date.cpp.o
+/usr/bin/ranlib libTimeZone.a

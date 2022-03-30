@@ -1,0 +1,2 @@
+/usr/bin/ar qc liboldlib.a  CMakeFiles/oldlib.dir/src/net/old/EventLoop.cpp.o
+/usr/bin/ranlib liboldlib.a

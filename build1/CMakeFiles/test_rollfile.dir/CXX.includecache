@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/AppendFile.h
+stdio.h
+-
+string
+-
+memory
+-
+
+../include/ProcessInfo.h
+sys/types.h
+-
+unistd.h
+-
+string
+-
+
+../include/RollFile.h
+AppendFile.h
+../include/AppendFile.h
+time.h
+-
+unistd.h
+-
+memory
+-
+mutex
+-
+string
+-
+
+/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/RollFile.cpp
+RollFile.h
+/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/RollFile.h
+ProcessInfo.h
+/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/ProcessInfo.h
+

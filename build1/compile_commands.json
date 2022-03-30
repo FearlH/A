@@ -1,0 +1,52 @@
+[
+{
+  "directory": "/home/greatsnow/CODE/CODE3/MUDUO3/A/build",
+  "command": "/usr/bin/g++   -I/home/greatsnow/CODE/CODE3/MUDUO3/A/include  -g   -o CMakeFiles/baselib.dir/src/base/AsyncLog.cpp.o -c /home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/AsyncLog.cpp",
+  "file": "/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/AsyncLog.cpp"
+},
+{
+  "directory": "/home/greatsnow/CODE/CODE3/MUDUO3/A/build",
+  "command": "/usr/bin/g++   -I/home/greatsnow/CODE/CODE3/MUDUO3/A/include  -g   -o CMakeFiles/baselib.dir/src/base/AppendFile.cpp.o -c /home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/AppendFile.cpp",
+  "file": "/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/AppendFile.cpp"
+},
+{
+  "directory": "/home/greatsnow/CODE/CODE3/MUDUO3/A/build",
+  "command": "/usr/bin/g++   -I/home/greatsnow/CODE/CODE3/MUDUO3/A/include  -g   -o CMakeFiles/baselib.dir/src/base/CountDownLatch.cpp.o -c /home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/CountDownLatch.cpp",
+  "file": "/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/CountDownLatch.cpp"
+},
+{
+  "directory": "/home/greatsnow/CODE/CODE3/MUDUO3/A/build",
+  "command": "/usr/bin/g++   -I/home/greatsnow/CODE/CODE3/MUDUO3/A/include  -g   -o CMakeFiles/baselib.dir/src/base/LogStream.cpp.o -c /home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/LogStream.cpp",
+  "file": "/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/LogStream.cpp"
+},
+{
+  "directory": "/home/greatsnow/CODE/CODE3/MUDUO3/A/build",
+  "command": "/usr/bin/g++   -I/home/greatsnow/CODE/CODE3/MUDUO3/A/include  -g   -o CMakeFiles/baselib.dir/src/base/ProcessInfo.cpp.o -c /home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/ProcessInfo.cpp",
+  "file": "/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/ProcessInfo.cpp"
+},
+{
+  "directory": "/home/greatsnow/CODE/CODE3/MUDUO3/A/build",
+  "command": "/usr/bin/g++   -I/home/greatsnow/CODE/CODE3/MUDUO3/A/include  -g   -o CMakeFiles/baselib.dir/src/base/RollFile.cpp.o -c /home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/RollFile.cpp",
+  "file": "/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/RollFile.cpp"
+},
+{
+  "directory": "/home/greatsnow/CODE/CODE3/MUDUO3/A/build",
+  "command": "/usr/bin/g++   -I/home/greatsnow/CODE/CODE3/MUDUO3/A/include  -g   -o CMakeFiles/baselib.dir/src/base/Timestamp.cpp.o -c /home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/Timestamp.cpp",
+  "file": "/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/Timestamp.cpp"
+},
+{
+  "directory": "/home/greatsnow/CODE/CODE3/MUDUO3/A/build",
+  "command": "/usr/bin/g++   -I/home/greatsnow/CODE/CODE3/MUDUO3/A/include  -g   -o CMakeFiles/baselib.dir/src/base/Date.cpp.o -c /home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/Date.cpp",
+  "file": "/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/Date.cpp"
+},
+{
+  "directory": "/home/greatsnow/CODE/CODE3/MUDUO3/A/build",
+  "command": "/usr/bin/g++   -I/home/greatsnow/CODE/CODE3/MUDUO3/A/include  -g   -o CMakeFiles/baselib.dir/src/base/Logging.cpp.o -c /home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/Logging.cpp",
+  "file": "/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/Logging.cpp"
+},
+{
+  "directory": "/home/greatsnow/CODE/CODE3/MUDUO3/A/build",
+  "command": "/usr/bin/g++   -I/home/greatsnow/CODE/CODE3/MUDUO3/A/include  -g   -o CMakeFiles/baselib.dir/src/base/ThreadPool.cpp.o -c /home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/ThreadPool.cpp",
+  "file": "/home/greatsnow/CODE/CODE3/MUDUO3/A/src/base/ThreadPool.cpp"
+}
+]
