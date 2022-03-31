@@ -149,10 +149,18 @@ SET(OLD_DIR
     ${PROJECT_SOURCE_DIR}/src/net/old)
 
 set(OLD_CPPS
-    ${OLD_DIR}/EventLoop.cpp)
+    ${OLD_DIR}/EventLoop.cpp
+    ${OLD_DIR}/Poller.cpp
+    ${OLD_DIR}/Channel.cpp
+    ${OLD_DIR}/Callbacks.cpp
+    ${OLD_DIR}/EpollPoller.cpp)
 
 set(OLD_HEADERS
-    ${OLD_DIR}/EventLoop.h)
+    ${OLD_DIR}/EventLoop.h
+    ${OLD_DIR}/Poller.h
+    ${OLD_DIR}/Channel.h
+    ${OLD_DIR}/Callbacks.h
+    ${OLD_DIR}/EpollPoller.h)
 
 add_library(oldlib
     ${OLD_CPPS} ${OLD_HEADERS})

@@ -1,6 +1,7 @@
 #include "EventLoop.h"
 #include "CurrentThread.h"
 #include <assert.h>
+#include <algorithm>
 using namespace m2;
 using namespace net;
 
@@ -31,7 +32,7 @@ EventLoop::~EventLoop()
 void EventLoop::loop()
 {
     assert(!looping_);
-    assertInLoopThread();//保证loop函数只能在创建这个对象的线程里面调用
+    assertInLoopThread(); //保证loop函数只能在创建这个对象的线程里面调用
     LOG_TRACE << "START TIME";
     //...
     LOG_TRACE << "END TIME";
@@ -40,4 +41,29 @@ void EventLoop::loop()
 void EventLoop::abortNotInLoopThread()
 {
     LOG_FATAL << "NOT in loop thread " << t_loopInThread << " ID: " << threadId_;
+}
+
+void EventLoop::updateChannel(Channel *channel)
+{
+    assert(channel->ownerLoop() == this);
+    assertInLoopThread();
+    poller_->updateChannel(channel);
+}
+void EventLoop::removeChannel(Channel *channel)
+{
+    assert(channel->ownerLoop() == this);
+    assertInLoopThread();
+    //当前处理的这一个就是，或者是没有
+    if (eventHandling_)
+    {
+        assert(currentActiveChannel_ == channel ||
+               std::find(activeChannels_.begin(), activeChannels_.end(), channel) == activeChannels_.end());
+    }
+    poller_->removeChannel(channel);
+}
+bool EventLoop::hasChannel(Channel *channel)
+{
+    assert(channel->ownerLoop() == this); // channel必须是自己的
+    assertInLoopThread();                 //这个就是必须的，需要在当前线程执行
+    return poller_->hasChannel(channel);
 }
