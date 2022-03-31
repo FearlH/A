@@ -132,16 +132,16 @@ target_link_libraries(baselib
 
 
 
-add_executable(test_logging
-    src/base/test/test_logging.cpp ${BASE_LIB_CPP})
+# add_executable(test_logging
+#     src/base/test/test_logging.cpp ${BASE_LIB_CPP})
 
-target_include_directories(test_logging
-    PRIVATE
-    ${PROJECT_SOURCE_DIR}/include)
+# target_include_directories(test_logging
+#     PRIVATE
+#     ${PROJECT_SOURCE_DIR}/include)
 
-target_link_libraries(test_logging
-    PRIVATE
-        pthread)
+# target_link_libraries(test_logging
+#     PRIVATE
+#         pthread)
 
 
 ####################################################OLD
@@ -150,39 +150,45 @@ SET(OLD_DIR
 
 set(OLD_CPPS
     ${OLD_DIR}/EventLoop.cpp
-    ${OLD_DIR}/Poller.cpp
     ${OLD_DIR}/Channel.cpp
     ${OLD_DIR}/Callbacks.cpp
-    ${OLD_DIR}/EpollPoller.cpp)
+    ${OLD_DIR}/Poller.cpp
+    ${OLD_DIR}/EpollPoller.cpp
+    )
 
 set(OLD_HEADERS
     ${OLD_DIR}/EventLoop.h
-    ${OLD_DIR}/Poller.h
     ${OLD_DIR}/Channel.h
     ${OLD_DIR}/Callbacks.h
-    ${OLD_DIR}/EpollPoller.h)
+    ${OLD_DIR}/Poller.h
+    ${OLD_DIR}/EpollPoller.h
+    )
 
 add_library(oldlib
-    ${OLD_CPPS} ${OLD_HEADERS})
+    ${OLD_CPPS})
 
 target_include_directories(oldlib
     PUBLIC
-        ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
+        ${PROJECT_SOURCE_DIR}/include)
+
+target_include_directories(oldlib
+    PUBLIC
+        ${OLD_DIR})
 
 target_link_libraries(oldlib
     PUBLIC
         baselib)
 
-set(OLD_INCLUDE
-    ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
+# set(OLD_INCLUDE
+#     ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
 
-add_executable(test_eventloop
-    ${OLD_DIR}/test/test_eventloop.cpp ${OLD_DIR}/EventLoop.cpp)
-target_include_directories(test_eventloop
-    PUBLIC
-        ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
-target_link_libraries(test_eventloop
-    PRIVATE
-        pthread baselib)
+# add_executable(test_eventloop
+#     ${OLD_DIR}/test/test_eventloop.cpp ${OLD_DIR}/EventLoop.cpp)
+# target_include_directories(test_eventloop
+#     PUBLIC
+#         ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
+# target_link_libraries(test_eventloop
+#     PRIVATE
+#         pthread baselib)
 
 ######################################################OLD

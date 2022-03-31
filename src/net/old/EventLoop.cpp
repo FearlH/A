@@ -1,5 +1,7 @@
 #include "EventLoop.h"
 #include "CurrentThread.h"
+#include "Channel.h"
+#include "Poller.h"
 #include <assert.h>
 #include <algorithm>
 using namespace m2;

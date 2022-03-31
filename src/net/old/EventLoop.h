@@ -3,14 +3,16 @@
 
 #include "Logging.h"
 #include "CurrentThread.h"
-#include "Poller.h"
-#include "Channel.h"
 #include <assert.h>
 #include <memory>
+#include <vector>
+#include <atomic>
 namespace m2
 {
     namespace net
     {
+        class Channel;
+        class Poller;
         class EventLoop
         {
         public:
@@ -127,8 +129,6 @@ namespace m2
             // static EventLoop *getEventLoopOfCurrentThread();
 
         private:
-            void
-            abortNotInLoopThread();
 
             bool looping_;
             const pid_t threadId_; //对象属于的线程的id
@@ -141,7 +141,7 @@ namespace m2
 
             typedef std::vector<Channel *> ChannelList;
 
-            bool looping_; /* atomic */
+            // bool looping_; /* atomic */
             // std::atomic<bool> quit_;
             bool eventHandling_; /* atomic */
             // bool callingPendingFunctors_; /* atomic */

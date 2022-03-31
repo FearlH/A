@@ -16,7 +16,7 @@ namespace m2
         class Poller //负责注册信号Epoll
         {
         public:
-            using ChannelList = std::vector<Channel *>;
+            using ChannelList = std::vector<Channel *> ;
             Poller(EventLoop *loop);
             virtual ~Poller();
             //里面有一些操作
