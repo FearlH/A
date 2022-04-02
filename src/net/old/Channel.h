@@ -21,6 +21,8 @@ namespace m2
             void setCallbacks(std::unique_ptr<Callbacks> &&callbacks)
             {
                 uPtr_Callbacks_ = std::move(callbacks);
+                uPtr_Callbacks_->thisChannel_ = this;
+                uPtr_Callbacks_->fd_ = fd_;
             }
 
             /// Tie this channel to the owner object managed by shared_ptr,

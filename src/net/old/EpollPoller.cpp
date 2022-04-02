@@ -14,7 +14,7 @@ namespace
     const int KDeleted = 2; //表示的是已经删除的，不在epoll里面，但是在fd_channels里面
 }
 
-EpollPoller::EpollPoller(EventLoop *loop) : Poller(loop), epollFd_(::epoll_create1(EPOLL_CLOEXEC))
+EpollPoller::EpollPoller(EventLoop *loop) : Poller(loop), epollFd_(::epoll_create1(EPOLL_CLOEXEC)), resultEvents_(KInitEventListSize_)
 {
     if (epollFd_ < 0)
     {
@@ -116,7 +116,7 @@ Timestamp EpollPoller::poll(int timeoutMs, ChannelList *activeChannels)
     }
     else if (eventNums == 0)
     {
-        LOG_TRACE << "NO EVENT";
+        LOG_TRACE << "NO EVENT NOTHING HAPPENDS";
     }
     else
     {

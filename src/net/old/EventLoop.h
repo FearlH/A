@@ -3,6 +3,14 @@
 
 #include "Logging.h"
 #include "CurrentThread.h"
+// #include "Poller.h"
+//不能在这个地方引入头文件
+//会使得编译的时候把Poller引入进来
+//然后Poller又会引入EventLoop
+//但是这个时候已经是在EventLoop头文件里面了
+//那么这个EventLoop里面就包含的Poller就不会包含EventLoop
+//导致之后的Poller使用EventLoop就是失效的
+//就需要后面的前置声明，而不是这个时候引入头文件
 #include <assert.h>
 #include <memory>
 #include <vector>
@@ -30,23 +38,7 @@ namespace m2
                 }
             }
 
-            // typedef std::function<void()> Functor;
-
-            // EventLoop();
-            // ~EventLoop(); // force out-line dtor, for std::unique_ptr members.
-
-            // ///
-            // /// Loops forever.
-            // ///
-            // /// Must be called in the same thread as creation of the object.
-            // ///
-            // void loop();
-
-            // /// Quits loop.
-            // ///
-            // /// This is not 100% thread safe, if you call through a raw pointer,
-            // /// better to call through shared_ptr<EventLoop> for 100% safety.
-            // void quit();
+            void quit(); //不是完全线程安全，可能需要使用智能指针
 
             // ///
             // /// Time when poll returns, usually means data arrival.
@@ -129,7 +121,6 @@ namespace m2
             // static EventLoop *getEventLoopOfCurrentThread();
 
         private:
-
             bool looping_;
             const pid_t threadId_; //对象属于的线程的id
 
@@ -142,18 +133,17 @@ namespace m2
             typedef std::vector<Channel *> ChannelList;
 
             // bool looping_; /* atomic */
-            // std::atomic<bool> quit_;
+            std::atomic<bool> quit_;
             bool eventHandling_; /* atomic */
             // bool callingPendingFunctors_; /* atomic */
-            // int64_t iteration_;
-            // const pid_t threadId_;
-            // Timestamp pollReturnTime_;
-            std::unique_ptr<Poller> poller_;
+            int64_t iteration_;
+            Timestamp pollReturnTime_;
+            std::unique_ptr<Poller> poller_; // new出来的指针交给poller_监管
             // std::unique_ptr<TimerQueue> timerQueue_;
             // int wakeupFd_;
             // // unlike in TimerQueue, which is an internal class,
             // // we don't expose Channel to client.
-            // std::unique_ptr<Channel> wakeupChannel_;
+            std::unique_ptr<Channel> wakeupChannel_;
             // boost::any context_;
 
             // // scratch variables

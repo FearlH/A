@@ -1,6 +1,8 @@
 #ifndef POLLER_H
 #define POLLER_H
 
+//在EventLoop.h里面包含这个头文件的时候
+//下面这行因为有#define的存在就失效了
 #include "EventLoop.h"
 #include "Timestamp.h"
 
@@ -16,7 +18,7 @@ namespace m2
         class Poller //负责注册信号Epoll
         {
         public:
-            using ChannelList = std::vector<Channel *> ;
+            using ChannelList = std::vector<Channel *>;
             Poller(EventLoop *loop);
             virtual ~Poller();
             //里面有一些操作

@@ -3,14 +3,14 @@
 #include <assert.h>
 #include <sstream>
 #include <sys/types.h>
-#include <sys/poll.h>
+#include <sys/epoll.h>
 
 using namespace m2;
 using namespace m2::net;
 
 const int Channel::kNoneEvent = 0;
-const int Channel::kReadEvent = POLLIN | POLLPRI;
-const int Channel::kWriteEvent = POLLOUT;
+const int Channel::kReadEvent = EPOLLIN | EPOLLPRI;
+const int Channel::kWriteEvent = EPOLLOUT;
 
 Channel::Channel(EventLoop *loop, int fd)
     : loop_(loop), fd_(fd),
@@ -26,12 +26,13 @@ Channel::Channel(EventLoop *loop, int fd)
 
 Channel::~Channel()
 {
-    assert(!addedToLoop_);
-    assert(!eventHandling_);
+    //  TODO 析构的时候怎么确定loop是否存在？？
+    // assert(!addedToLoop_);
+    // assert(!eventHandling_);
     //没有工作去作
     if (loop_->isInLoopThread())
     {
-        assert(!loop_->hasChannel(this)); //确定loop里面不含有这个了
+        // assert(!loop_->hasChannel(this)); //确定loop里面不含有这个了
     }
 }
 
@@ -71,7 +72,7 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
     eventHandling_ = true;
     LOG_TRACE << eventsToString();
     // revents_就是返回到的event
-    if (revents_ & POLLHUP && !events_ & POLLIN) //对面发出了shutdowm(fd,WR)event时间就会有POLLHUP
+    if (revents_ & EPOLLHUP && !events_ & EPOLLIN) //对面发出了shutdowm(fd,WR)event时间就会有POLLHUP
     {
         if (logHup_)
         {
@@ -82,12 +83,12 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
             uPtr_Callbacks_->closeCalback();
         }
     }
-    if (revents_ & POLLNVAL)
-    {
-        //不存在的文件描述符
-        LOG_WARN << "fd= " << fd_ << "Channel::handleEvent() INVALID";
-    }
-    if (revents_ & (POLLERR | POLLNVAL))
+    // if (revents_ & EPOLLNVAL)
+    // {
+    //     //不存在的文件描述符
+    //     LOG_WARN << "fd= " << fd_ << "Channel::handleEvent() INVALID";
+    // }
+    if (revents_ & EPOLLERR)
     {
         LOG_WARN << "fd= " << fd_ << "Channel::handleEvent() ERROR";
         //出错使用的是error
@@ -96,14 +97,14 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
             uPtr_Callbacks_->errorCallback();
         }
     }
-    if (revents_ & (POLLIN | POLLRDHUP | POLLPRI)) // POLLPRI紧急事件
+    if (revents_ & (EPOLLIN | EPOLLRDHUP | EPOLLPRI)) // POLLPRI紧急事件
     {
         if (uPtr_Callbacks_)
         {
             uPtr_Callbacks_->readCallback(receiveTime);
         }
     }
-    if (revents_ & POLLOUT)
+    if (revents_ & EPOLLOUT)
     {
         if (uPtr_Callbacks_)
         {
@@ -111,6 +112,12 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
         }
     }
     eventHandling_ = false;
+}
+
+void Channel::update()
+{
+    addedToLoop_ = true;
+    ownerLoop()->updateChannel(this);
 }
 
 string Channel::eventsToString() const
@@ -122,20 +129,18 @@ string Channel::eventsToString(int fd, int ev) //参数不一样
 {
     std::ostringstream oss;
     oss << fd << ": ";
-    if (ev & POLLIN)
+    if (ev & EPOLLIN)
         oss << "IN ";
-    if (ev & POLLPRI)
+    if (ev & EPOLLPRI)
         oss << "PRI ";
-    if (ev & POLLOUT)
+    if (ev & EPOLLOUT)
         oss << "OUT ";
-    if (ev & POLLHUP)
+    if (ev & EPOLLHUP)
         oss << "HUP ";
-    if (ev & POLLRDHUP)
+    if (ev & EPOLLRDHUP)
         oss << "RDHUP ";
-    if (ev & POLLERR)
+    if (ev & EPOLLERR)
         oss << "ERR ";
-    if (ev & POLLNVAL)
-        oss << "NVAL ";
 
     return oss.str();
 }

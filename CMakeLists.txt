@@ -144,7 +144,7 @@ target_link_libraries(baselib
 #         pthread)
 
 
-####################################################OLD
+##########################################################################################OLD
 SET(OLD_DIR
     ${PROJECT_SOURCE_DIR}/src/net/old)
 
@@ -154,6 +154,7 @@ set(OLD_CPPS
     ${OLD_DIR}/Callbacks.cpp
     ${OLD_DIR}/Poller.cpp
     ${OLD_DIR}/EpollPoller.cpp
+    ${OLD_DIR}/defaultPoller.cpp
     )
 
 set(OLD_HEADERS
@@ -179,8 +180,11 @@ target_link_libraries(oldlib
     PUBLIC
         baselib)
 
-# set(OLD_INCLUDE
-#     ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
+
+
+
+set(OLD_INCLUDE
+    ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
 
 # add_executable(test_eventloop
 #     ${OLD_DIR}/test/test_eventloop.cpp ${OLD_DIR}/EventLoop.cpp)
@@ -191,4 +195,12 @@ target_link_libraries(oldlib
 #     PRIVATE
 #         pthread baselib)
 
-######################################################OLD
+add_executable(test_eventloop2
+    ${OLD_DIR}/test/test_eventloop2.cpp)
+target_include_directories(test_eventloop2
+    PRIVATE
+        ${OLD_INCLUDE})
+target_link_libraries(test_eventloop2
+    PUBLIC
+        pthread baselib oldlib)
+########################################################################################OLD
