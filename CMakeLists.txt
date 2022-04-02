@@ -114,7 +114,9 @@ set(BASE_LIB_CPP
         src/base/Timestamp.cpp 
         src/base/Date.cpp 
         src/base/Logging.cpp
-        src/base/ThreadPool.cpp)
+        src/base/ThreadPool.cpp
+        src/base/TimeZone.cpp
+        )
 
 
 

@@ -1,4 +1,4 @@
-#include "LogStream.h"
+#include "base/LogStream.h"
 #include <sys/types.h>
 #include <inttypes.h>
 using namespace m2;

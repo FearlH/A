@@ -1,5 +1,5 @@
-#include "Logging.h"
-#include "Timestamp.h"
+#include "base/Logging.h"
+#include "base/Timestamp.h"
 
 #include <string.h>
 #include <errno.h>

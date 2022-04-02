@@ -1,8 +1,8 @@
 #include "EventLoop.h"
-#include "CurrentThread.h"
+#include "base/CurrentThread.h"
 #include "Channel.h"
 #include "Poller.h"
-#include "Timestamp.h"
+#include "base/Timestamp.h"
 #include <assert.h>
 #include <algorithm>
 using namespace m2;
@@ -122,7 +122,7 @@ bool EventLoop::hasChannel(Channel *channel)
 void EventLoop::quit()
 {
     quit_ = true;
-    if (!isInLoopThread)
+    if (!isInLoopThread())
     {
         // wakeup();
         //异步唤醒，在另外一个线程里面退出的时候，有可能这个loop正在等待在Epoll上面
