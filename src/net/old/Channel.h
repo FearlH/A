@@ -18,12 +18,19 @@ namespace m2
             Channel &operator=(const Channel &) = delete;
 
             void handleEvent(Timestamp receiveTime);
-            void setCallbacks(std::unique_ptr<Callbacks> &&callbacks)
-            {
-                uPtr_Callbacks_ = std::move(callbacks);
-                uPtr_Callbacks_->thisChannel_ = this;
-                uPtr_Callbacks_->fd_ = fd_;
-            }
+            // TODO: unique_ptr OR shared_ptr
+            void setCallbacks(std::unique_ptr<Callbacks> &&callbacks);
+            // {
+            //     uPtr_Callbacks_ = std::move(callbacks);
+            //     uPtr_Callbacks_->thisChannel_ = this;
+            //     uPtr_Callbacks_->fd_ = fd_;
+            // }
+            void setCallbacks(std::shared_ptr<Callbacks> callbacks);
+            // {
+            //     sPtr_Callbacks_ = callbacks;
+            //     sPtr_Callbacks_->thisChannel_ = this;
+            //     sPtr_Callbacks_->fd_ = fd_;
+            // }
 
             /// Tie this channel to the owner object managed by shared_ptr,
             /// prevent the owner object being destroyed in handleEvent.
@@ -108,6 +115,7 @@ namespace m2
             bool addedToLoop_;
 
             std::unique_ptr<Callbacks> uPtr_Callbacks_;
+            std::shared_ptr<Callbacks> sPtr_Callbacks_;
         };
     }
 }

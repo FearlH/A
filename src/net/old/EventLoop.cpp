@@ -3,8 +3,12 @@
 #include "Channel.h"
 #include "Poller.h"
 #include "base/Timestamp.h"
+#include "base/Logging.h"
+#include "TimerQueue.h"
 #include <assert.h>
 #include <algorithm>
+#include <sys/eventfd.h>
+#include <unistd.h>
 using namespace m2;
 using namespace net;
 
@@ -12,24 +16,29 @@ namespace
 {
     thread_local EventLoop *t_loopInThread = nullptr; //这个线程拥有的Loop
     const int kPollTimeMs = 10000;                    // Epoll等待的时间
+    int createEventfd()
+    {
+
+        int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+        if (evtfd < 0)
+        {
+            LOG_SYSERR << "Failed in eventfd";
+            abort();
+        }
+        return evtfd;
+    }
 }
 
 EventLoop::EventLoop() : looping_(false), threadId_(CurrentThread::tid()),
                          poller_(Poller::newDefaultPoller(this)), quit_(false),
                          eventHandling_(false), iteration_(0),
-                         currentActiveChannel_(nullptr)
+                         currentActiveChannel_(nullptr),
 
-// looping_(false),
-// quit_(false),
-// eventHandling_(false),
-// callingPendingFunctors_(false),
-// iteration_(0),
-// threadId_(CurrentThread::tid()),
-// poller_(Poller::newDefaultPoller(this)),
-// timerQueue_(new TimerQueue(this)),
-// wakeupFd_(createEventfd()),
-// wakeupChannel_(new Channel(this, wakeupFd_)),
-// currentActiveChannel_(NULL)
+                         doingPendingNumCalls_(false),
+
+                         timerQueue_(new TimerQueue(this)),
+                         wakeupFd_(createEventfd()),
+                         wakeupChannel_(new Channel(this, wakeupFd_))
 {
     LOG_TRACE << "Thread Loop Created ID: " << threadId_;
     if (t_loopInThread != nullptr)
@@ -40,6 +49,9 @@ EventLoop::EventLoop() : looping_(false), threadId_(CurrentThread::tid()),
     {
         t_loopInThread = this;
     }
+    wakeupChannel_ = std::make_unique<Channel>(this); //异步唤醒的设置
+    wakeupChannel_->setCallbacks(handelRead_);
+    wakeupChannel_->enableReading();
 }
 
 EventLoop::~EventLoop()
@@ -84,7 +96,7 @@ void EventLoop::loop()
         }
         currentActiveChannel_ = nullptr;
         eventHandling_ = false;
-        // doPendingFunctors();
+        doPendingNumCalls();
     }
     LOG_TRACE << "END TIME";
 }
@@ -124,8 +136,69 @@ void EventLoop::quit()
     quit_ = true;
     if (!isInLoopThread())
     {
-        // wakeup();
-        //异步唤醒，在另外一个线程里面退出的时候，有可能这个loop正在等待在Epoll上面
-        //那么就会需要去唤醒
+        wakeup();
+        // 异步唤醒，在另外一个线程里面退出的时候，有可能这个loop正在等待在Epoll上面
+        // 那么就会需要去唤醒
+    }
+}
+
+void EventLoop::doPendingNumCalls()
+{
+    doingPendingNumCalls_ = true;
+    std::vector<CallbackNum::NumCall> numCalls;
+    {
+        std::lock_guard<std::mutex> locker(mutex_);
+        numCalls.swap(pendingNumCalls_);
+    }
+    for (int i = 0; i < numCalls.size(); ++i)
+    {
+        CallbackNum::doCallNumPair(numCalls[i]);
+    }
+    doingPendingNumCalls_ = false;
+}
+
+void EventLoop::runInLoop(CallbackNum::NumCall taskCallback)
+{
+    if (isInLoopThread())
+    {
+        CallbackNum::doCallNumPair(taskCallback);
+    }
+    else
+    {
+        queueInLoop(taskCallback);
+    }   
+}
+
+void EventLoop::queueInLoop(CallbackNum::NumCall taskCallback)
+{
+    {
+        std::lock_guard<std::mutex> locker(mutex_);
+        pendingNumCalls_.push_back(taskCallback);
+    }
+    if (!isInLoopThread() || doingPendingNumCalls_) //这个pending的任务是在EventLoop的最后执行的,执行完成之后会进行下一次的阻塞，所以需要异步唤醒
+    {
+        wakeup();
+    }
+}
+
+void EventLoop::wakeup()
+{
+    int64_t one = 1;
+    ssize_t numWrites = ::write(wakeupFd_, &one, sizeof(one));
+    if (numWrites != sizeof(one))
+    {
+        LOG_SYSERR << "WAKE UP ERROR "
+                   << "write " << numWrites << " Bytes ";
+    }
+}
+
+void EventLoop::HandleWakeUpRead::readCallback()
+{
+    int64_t one = 1;
+    ssize_t numRead = read(loop_->wakeupFd_, &one, sizeof(one));
+    if (numRead != sizeof(one))
+    {
+        LOG_SYSERR << "WAKE UP ERROR "
+                   << "write " << numRead << " Bytes ";
     }
 }

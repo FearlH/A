@@ -64,6 +64,10 @@ namespace m2
     {
         return t1.microsecondsFromEpoch() == t2.microsecondsFromEpoch();
     }
+    inline bool operator!=(Timestamp t1, Timestamp t2)
+    {
+        return !(t1 == t2);
+    }
 
     //得到时间的差，按照秒来返回
     inline double timeDifference(Timestamp t1, Timestamp t2)

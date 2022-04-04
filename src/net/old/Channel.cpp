@@ -6,7 +6,7 @@
 #include <sys/epoll.h>
 
 using namespace m2;
-using namespace m2::net;
+using namespace net;
 
 const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = EPOLLIN | EPOLLPRI;
@@ -24,9 +24,31 @@ Channel::Channel(EventLoop *loop, int fd)
 {
 }
 
+void Channel::setCallbacks(std::unique_ptr<Callbacks> &&callbacks)
+{
+    if (sPtr_Callbacks_)
+    {
+        sPtr_Callbacks_.reset();
+    }
+    uPtr_Callbacks_ = std::move(callbacks);
+    uPtr_Callbacks_->thisChannel_ = this;
+    uPtr_Callbacks_->fd_ = fd_;
+}
+void Channel::setCallbacks(std::shared_ptr<Callbacks> callbacks)
+{
+    if (uPtr_Callbacks_)
+    {
+        uPtr_Callbacks_.reset();
+    }
+    sPtr_Callbacks_ = callbacks;
+    sPtr_Callbacks_->thisChannel_ = this;
+    sPtr_Callbacks_->fd_ = fd_;
+}
+
 Channel::~Channel()
 {
-    //  TODO 析构的时候怎么确定loop是否存在？？
+    // 析构的时候怎么确定loop是否存在？？
+    // 都是单线程操作，自己定义好顺序就行了
     // assert(!addedToLoop_);
     // assert(!eventHandling_);
     //没有工作去作
@@ -82,6 +104,10 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
         {
             uPtr_Callbacks_->closeCalback();
         }
+        if (sPtr_Callbacks_)
+        {
+            sPtr_Callbacks_->closeCalback();
+        }
     }
     // if (revents_ & EPOLLNVAL)
     // {
@@ -96,6 +122,10 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
         {
             uPtr_Callbacks_->errorCallback();
         }
+        if (sPtr_Callbacks_)
+        {
+            sPtr_Callbacks_->errorCallback();
+        }
     }
     if (revents_ & (EPOLLIN | EPOLLRDHUP | EPOLLPRI)) // POLLPRI紧急事件
     {
@@ -103,12 +133,20 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
         {
             uPtr_Callbacks_->readCallback(receiveTime);
         }
+        if (sPtr_Callbacks_)
+        {
+            sPtr_Callbacks_->readCallback(receiveTime);
+        }
     }
     if (revents_ & EPOLLOUT)
     {
         if (uPtr_Callbacks_)
         {
             uPtr_Callbacks_->writeCallback();
+        }
+        if (sPtr_Callbacks_)
+        {
+            sPtr_Callbacks_->writeCallback();
         }
     }
     eventHandling_ = false;

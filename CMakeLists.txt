@@ -157,6 +157,8 @@ set(OLD_CPPS
     ${OLD_DIR}/Poller.cpp
     ${OLD_DIR}/EpollPoller.cpp
     ${OLD_DIR}/defaultPoller.cpp
+    ${OLD_DIR}/Timer.cpp
+    ${OLD_DIR}/TimerQueue.cpp
     )
 
 set(OLD_HEADERS
@@ -165,6 +167,9 @@ set(OLD_HEADERS
     ${OLD_DIR}/Callbacks.h
     ${OLD_DIR}/Poller.h
     ${OLD_DIR}/EpollPoller.h
+    ${OLD_DIR}/Timer.h
+    ${OLD_DIR}/TimerId.h
+    ${OLD_DIR}/TimerQueue.h
     )
 
 add_library(oldlib
@@ -185,8 +190,8 @@ target_link_libraries(oldlib
 
 
 
-set(OLD_INCLUDE
-    ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
+# set(OLD_INCLUDE
+#     ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
 
 # add_executable(test_eventloop
 #     ${OLD_DIR}/test/test_eventloop.cpp ${OLD_DIR}/EventLoop.cpp)
