@@ -23,9 +23,9 @@ namespace m2
         class TimerQueue
         {
         public:
-            explicit TimerQueue(EventLoop *);
+            explicit TimerQueue(EventLoop *loop);
             ~TimerQueue();
-            TimerId addTimer(std::shared_ptr<Callbacks> timeCallback, Timestamp when, double interval);
+            TimerId addTimer(VoidFunc timeCallback, Timestamp when, double interval);
             //是在这个TimeQueue里面构造，不是构造好之后传入
             //返回给用户一个TimerId
             void cancel(TimerId timeId);
@@ -35,31 +35,14 @@ namespace m2
             using ActiveTimer = std::pair<Timer *, int64_t>;
             using ActiveTimerSet = std::set<ActiveTimer>;
 
-            // void addTimerInLoop(Timer *timer);
-            // void cancelTimerInLoop(TimerId timerId);
+            void addTimerInLoop(Timer *timer); //包装一个可调用对象，传入EventLoop
+            void cancelTimerInLoop(TimerId timerId);
 
-            class AddTimerInLoop : public Callbacks
-            {
-                AddTimerInLoop(EventLoop *loop, Timer *timer, TimerQueue *tq);
-                void someVoidCallback() override;
-
-            private:
-                EventLoop *loop_;
-                Timer *timer_;
-                TimerQueue *tq_;
-            };
-            class CancelTimerInLoop : public Callbacks
-            {
-                CancelTimerInLoop(EventLoop *loop, Timer *timer, TimerQueue *tq);
-                void someVoidCallback() override;
-
-            private:
-                EventLoop *loop_;
-                Timer *timer_;
-                TimerQueue *tq_;
-            };
             //使用一个TimeFd来计时，那么使用这个函数处理读取TimerFd
+            //处理计时的时候的超时的读取
             void hadleRead();
+            //先把过期的都拿出来，然后执行，最后更新计时器
+            // reset(expired, now); //过期的事件里面如果有重复的，那么就重新设置新的定时器
 
             // move out all expired timers
             std::vector<Entry> getExpired(Timestamp now);                 //获取超时的Timer
@@ -74,8 +57,9 @@ namespace m2
 
             std::set<Entry> timerList_;
             ActiveTimerSet activeTimers_; //这个和上面那个保存的是完全一样的内容，只不过排序方式不一样
-            bool callExpeiredTimers_;
-            ActiveTimerSet cancelTimets_;
+            //? Timer的到期时间可能是会变的，所以可呢是需要两个set
+            bool callingExpiredTimers_;
+            ActiveTimerSet cancelTimers_;
         };
     }
 }

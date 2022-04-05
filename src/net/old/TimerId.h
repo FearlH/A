@@ -8,7 +8,7 @@ namespace m2
         class Timer;
         class TimerId //可以复制
         {
-            friend class TimeSequence;
+            friend class TimerQueue;
 
         public:
             TimerId() : timer_(nullptr), sequence_(0) {}

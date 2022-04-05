@@ -24,27 +24,6 @@ Channel::Channel(EventLoop *loop, int fd)
 {
 }
 
-void Channel::setCallbacks(std::unique_ptr<Callbacks> &&callbacks)
-{
-    if (sPtr_Callbacks_)
-    {
-        sPtr_Callbacks_.reset();
-    }
-    uPtr_Callbacks_ = std::move(callbacks);
-    uPtr_Callbacks_->thisChannel_ = this;
-    uPtr_Callbacks_->fd_ = fd_;
-}
-void Channel::setCallbacks(std::shared_ptr<Callbacks> callbacks)
-{
-    if (uPtr_Callbacks_)
-    {
-        uPtr_Callbacks_.reset();
-    }
-    sPtr_Callbacks_ = callbacks;
-    sPtr_Callbacks_->thisChannel_ = this;
-    sPtr_Callbacks_->fd_ = fd_;
-}
-
 Channel::~Channel()
 {
     // 析构的时候怎么确定loop是否存在？？
@@ -100,13 +79,9 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
         {
             LOG_WARN << "fd= " << fd_ << "Channel::handleEvent() HUP";
         }
-        if (uPtr_Callbacks_)
+        if (closeCallback_)
         {
-            uPtr_Callbacks_->closeCalback();
-        }
-        if (sPtr_Callbacks_)
-        {
-            sPtr_Callbacks_->closeCalback();
+            closeCallback_();
         }
     }
     // if (revents_ & EPOLLNVAL)
@@ -118,36 +93,21 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
     {
         LOG_WARN << "fd= " << fd_ << "Channel::handleEvent() ERROR";
         //出错使用的是error
-        if (uPtr_Callbacks_)
+        if (errorCallback_)
         {
-            uPtr_Callbacks_->errorCallback();
-        }
-        if (sPtr_Callbacks_)
-        {
-            sPtr_Callbacks_->errorCallback();
+            errorCallback_();
         }
     }
     if (revents_ & (EPOLLIN | EPOLLRDHUP | EPOLLPRI)) // POLLPRI紧急事件
     {
-        if (uPtr_Callbacks_)
+        if (readCallback_)
         {
-            uPtr_Callbacks_->readCallback(receiveTime);
-        }
-        if (sPtr_Callbacks_)
-        {
-            sPtr_Callbacks_->readCallback(receiveTime);
+            readCallback_(receiveTime);
         }
     }
-    if (revents_ & EPOLLOUT)
+    if (writeCallback_)
     {
-        if (uPtr_Callbacks_)
-        {
-            uPtr_Callbacks_->writeCallback();
-        }
-        if (sPtr_Callbacks_)
-        {
-            sPtr_Callbacks_->writeCallback();
-        }
+        writeCallback_();
     }
     eventHandling_ = false;
 }

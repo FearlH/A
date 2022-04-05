@@ -3,6 +3,7 @@
 #include "Callbacks.h"
 #include "EventLoop.h"
 #include <memory>
+#include <functional>
 
 namespace m2
 {
@@ -18,19 +19,28 @@ namespace m2
             Channel &operator=(const Channel &) = delete;
 
             void handleEvent(Timestamp receiveTime);
-            // TODO: unique_ptr OR shared_ptr
-            void setCallbacks(std::unique_ptr<Callbacks> &&callbacks);
-            // {
-            //     uPtr_Callbacks_ = std::move(callbacks);
-            //     uPtr_Callbacks_->thisChannel_ = this;
-            //     uPtr_Callbacks_->fd_ = fd_;
-            // }
-            void setCallbacks(std::shared_ptr<Callbacks> callbacks);
-            // {
-            //     sPtr_Callbacks_ = callbacks;
-            //     sPtr_Callbacks_->thisChannel_ = this;
-            //     sPtr_Callbacks_->fd_ = fd_;
-            // }
+            //??? use functional
+
+            using EventCallback = std::function<void()>;
+            using ReadEventCallback = std::function<void(Timestamp)>;
+
+            void setReadCallback(ReadEventCallback rCallback)
+            {
+                //复制完成之后移动，相当于是把复制进来的那个参数移动了
+                readCallback_ = std::move(rCallback);
+            }
+            void setWriteCallbacks(EventCallback wCallback)
+            {
+                writeCallback_ = std::move(wCallback);
+            }
+            void setErrorCallbacks(EventCallback eCallback)
+            {
+                errorCallback_ = std::move(eCallback);
+            }
+            void setCloseCallbacks(EventCallback cCallback)
+            {
+                closeCallback_ = std::move(cCallback);
+            }
 
             /// Tie this channel to the owner object managed by shared_ptr,
             /// prevent the owner object being destroyed in handleEvent.
@@ -114,8 +124,10 @@ namespace m2
             bool eventHandling_;
             bool addedToLoop_;
 
-            std::unique_ptr<Callbacks> uPtr_Callbacks_;
-            std::shared_ptr<Callbacks> sPtr_Callbacks_;
+            EventCallback writeCallback_;
+            EventCallback closeCallback_;
+            EventCallback errorCallback_;
+            ReadEventCallback readCallback_;
         };
     }
 }

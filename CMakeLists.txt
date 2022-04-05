@@ -202,12 +202,12 @@ target_link_libraries(oldlib
 #     PRIVATE
 #         pthread baselib)
 
-add_executable(test_eventloop2
-    ${OLD_DIR}/test/test_eventloop2.cpp)
-target_include_directories(test_eventloop2
+add_executable(test_timer
+    ${OLD_DIR}/test/test_timer.cpp)
+target_include_directories(test_timer
     PRIVATE
         ${OLD_INCLUDE})
-target_link_libraries(test_eventloop2
+target_link_libraries(test_timer
     PUBLIC
         pthread baselib oldlib)
 ########################################################################################OLD

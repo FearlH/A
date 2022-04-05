@@ -3,6 +3,7 @@
 
 #include "base/Logging.h"
 #include "base/CurrentThread.h"
+#include "Callbacks.h"
 // #include "Poller.h"
 //不能在这个地方引入头文件
 //会使得编译的时候把Poller引入进来
@@ -16,6 +17,7 @@
 #include <vector>
 #include <atomic>
 #include <mutex>
+#include <functional>
 namespace m2
 {
     namespace net
@@ -23,7 +25,7 @@ namespace m2
         class Channel;
         class Poller;
         class TimerId;
-        class TimeQueue;
+        class TimerQueue;
         class EventLoop
         {
 
@@ -56,7 +58,7 @@ namespace m2
 
             // / 在Loop里面执行一个任务
             // / 然后会唤醒这个Loop，执行任务
-            void runInLoop(CallbackNum::NumCall taskCallback);
+            void runInLoop(VoidFunc task);
             /// Queues callback in the loop thread.
             /// Runs after finish pooling.
             /// Safe to call from other threads.
@@ -64,7 +66,7 @@ namespace m2
             //如果是在别的线程里面调用的，那么会使得任务被加入到这个Loop线程的一个队列里面
             //然后会唤醒这个Loop，执行任务
             //任务加入到Loop线程去做
-            void queueInLoop(CallbackNum::NumCall taskCallback);
+            void queueInLoop(VoidFunc task);
 
             size_t queueSize() const;
 
@@ -74,17 +76,17 @@ namespace m2
             /// Runs callback at 'time'.
             /// Safe to call from other threads.
             ///
-            TimerId runAt(Timestamp time, CallbackNum::NumCall taskCallback);
+            TimerId runAt(Timestamp time, VoidFunc timeCallback); //传递值之后再移动，和传const 引用再复制一样
             ///
             /// Runs callback after @c delay seconds.
             /// Safe to call from other threads.
             ///
-            TimerId runAfter(double delay, CallbackNum::NumCall taskCallback);
+            TimerId runAfter(double delay, VoidFunc timeCallback);
             ///
             /// Runs callback every @c interval seconds.
             /// Safe to call from other threads.
             ///
-            TimerId runEvery(double interval, CallbackNum::NumCall taskCallback);
+            TimerId runEvery(double interval, VoidFunc timeCallback);
             ///
             /// Cancels the timer.
             /// Safe to call from other threads.
@@ -121,21 +123,10 @@ namespace m2
             // static EventLoop *getEventLoopOfCurrentThread();
 
         private:
-            class HandleWakeUpRead : public Callbacks
-            {
-            public:
-                explicit HandleWakeUpRead(EventLoop *loop) : loop_(loop) {}
-                void readCallback() override;
-
-            private:
-                EventLoop *loop_;
-            };
-            std::shared_ptr<Callbacks> handelRead_ = std::make_shared<HandleWakeUpRead>(this);
-            bool looping_;
             const pid_t threadId_; //对象属于的线程的id
 
             void abortNotInLoopThread();
-            // void handleRead();        // waked up，异步唤醒使用
+            void handleRead();        // waked up，异步唤醒使用
             void doPendingNumCalls(); //异步唤醒之后需要作的工作
 
             // void printActiveChannels() const; // DEBUG
@@ -159,8 +150,10 @@ namespace m2
             // // scratch variables
             ChannelList activeChannels_;
             Channel *currentActiveChannel_;
-            mutable std::mutex mutex_;                          //异步加入需要锁
-            std::vector<CallbackNum::NumCall> pendingNumCalls_; //异步加入的队列
+            mutable std::mutex mutex_; //异步加入需要锁
+                                       //异步加入的队列
+
+            std::vector<VoidFunc> pendingTasks_;
         };
     }
 }

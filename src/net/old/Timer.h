@@ -6,9 +6,6 @@
 #include <atomic>
 #include <memory>
 
-
-
-
 namespace m2
 {
     namespace net
@@ -18,13 +15,13 @@ namespace m2
         class Timer
         {
         public:
-            Timer(std::shared_ptr<Callbacks> timeCallback, Timestamp when, double interval)
+            Timer(VoidFunc timeCallback, Timestamp when, double interval)
                 : timeCallback_(timeCallback), expiration_(when),
                   interval_(interval), repeat_(interval > 0),
                   thisNumSeq_(s_creatNum_.fetch_add(1)) {}
             void run()
             {
-                timeCallback_->timeCallback();
+                timeCallback_();
             }
             Timestamp expiration() const { return expiration_; }
             bool repeat() const { return repeat_; }
@@ -33,12 +30,12 @@ namespace m2
             static int64_t numCreated() { return s_creatNum_.load(); }
 
         private:
-            std::shared_ptr<Callbacks> timeCallback_; // Callback
-            Timestamp expiration_;                    //到期时间
-            const double interval_;                   //时间间隔,有时间间隔就是会重复，没有就是不会重复
-            const bool repeat_;                       //是否重复
-            const int64_t thisNumSeq_;                //唯一的编号
-            static std::atomic<int64_t> s_creatNum_;  //递增的标号，每一个新建的Timer都会使用一个独一无二的标号
+            VoidFunc timeCallback_;                  // Callback
+            Timestamp expiration_;                   //到期时间
+            const double interval_;                  //时间间隔,有时间间隔就是会重复，没有就是不会重复
+            const bool repeat_;                      //是否重复
+            const int64_t thisNumSeq_;               //唯一的编号
+            static std::atomic<int64_t> s_creatNum_; //递增的标号，每一个新建的Timer都会使用一个独一无二的标号
         };
     }
 }

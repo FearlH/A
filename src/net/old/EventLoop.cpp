@@ -49,9 +49,11 @@ EventLoop::EventLoop() : looping_(false), threadId_(CurrentThread::tid()),
     {
         t_loopInThread = this;
     }
-    wakeupChannel_ = std::make_unique<Channel>(this); //异步唤醒的设置
-    wakeupChannel_->setCallbacks(handelRead_);
-    wakeupChannel_->enableReading();
+    //异步唤醒的设置
+    // wakeupChannel_->setReadCallback(std::bind(&EventLoop::handleRead, this));
+    wakeupChannel_->setReadCallback([this](Timestamp time)
+                                    { this->handleRead(); });
+    wakeupChannel_->enableReading(); //里面会调用update自己注册
 }
 
 EventLoop::~EventLoop()
@@ -145,35 +147,35 @@ void EventLoop::quit()
 void EventLoop::doPendingNumCalls()
 {
     doingPendingNumCalls_ = true;
-    std::vector<CallbackNum::NumCall> numCalls;
+    std::vector<VoidFunc> tasks;
     {
         std::lock_guard<std::mutex> locker(mutex_);
-        numCalls.swap(pendingNumCalls_);
+        tasks.swap(pendingTasks_);
     }
-    for (int i = 0; i < numCalls.size(); ++i)
+    for (auto &task : tasks)
     {
-        CallbackNum::doCallNumPair(numCalls[i]);
+        task();
     }
     doingPendingNumCalls_ = false;
 }
 
-void EventLoop::runInLoop(CallbackNum::NumCall taskCallback)
+void EventLoop::runInLoop(VoidFunc task)
 {
     if (isInLoopThread())
     {
-        CallbackNum::doCallNumPair(taskCallback);
+        task();
     }
     else
     {
-        queueInLoop(taskCallback);
-    }   
+        queueInLoop(task);
+    }
 }
 
-void EventLoop::queueInLoop(CallbackNum::NumCall taskCallback)
+void EventLoop::queueInLoop(VoidFunc task)
 {
     {
         std::lock_guard<std::mutex> locker(mutex_);
-        pendingNumCalls_.push_back(taskCallback);
+        pendingTasks_.push_back(task);
     }
     if (!isInLoopThread() || doingPendingNumCalls_) //这个pending的任务是在EventLoop的最后执行的,执行完成之后会进行下一次的阻塞，所以需要异步唤醒
     {
@@ -192,13 +194,12 @@ void EventLoop::wakeup()
     }
 }
 
-void EventLoop::HandleWakeUpRead::readCallback()
+void EventLoop::handleRead()
 {
-    int64_t one = 1;
-    ssize_t numRead = read(loop_->wakeupFd_, &one, sizeof(one));
-    if (numRead != sizeof(one))
+    int64_t one = 0;
+    ssize_t readNum = read(wakeupFd_, &one, sizeof(one));
+    if (readNum != sizeof(one))
     {
-        LOG_SYSERR << "WAKE UP ERROR "
-                   << "write " << numRead << " Bytes ";
+        LOG_SYSERR << "handleRead ERROR read " << readNum << "bytes";
     }
 }
