@@ -5,6 +5,7 @@
 #include "base/Timestamp.h"
 #include "base/Logging.h"
 #include "TimerQueue.h"
+#include "TimerId.h"
 #include <assert.h>
 #include <algorithm>
 #include <sys/eventfd.h>
@@ -202,4 +203,29 @@ void EventLoop::handleRead()
     {
         LOG_SYSERR << "handleRead ERROR read " << readNum << "bytes";
     }
+}
+
+TimerId EventLoop::runAt(Timestamp time, VoidFunc timeCallback) //传递值之后再移动，和传const 引用再复制一样
+{
+    return timerQueue_->addTimer(std::move(timeCallback), time, 0);
+}
+
+TimerId EventLoop::runAfter(double delay, VoidFunc timeCallback)
+{
+    Timestamp time = addTime(Timestamp::now(), delay);
+    return runAt(time, std::move(timeCallback));
+}
+///
+/// Runs callback every @c interval seconds.
+/// Safe to call from other threads.
+///
+TimerId EventLoop::runEvery(double interval, VoidFunc timeCallback)
+{
+    Timestamp time = Timestamp::now();
+    return timerQueue_->addTimer(std::move(timeCallback), time, interval);
+}
+
+void EventLoop::cancel(TimerId timerId)
+{
+    timerQueue_->cancel(timerId);
 }

@@ -159,6 +159,7 @@ set(OLD_CPPS
     ${OLD_DIR}/defaultPoller.cpp
     ${OLD_DIR}/Timer.cpp
     ${OLD_DIR}/TimerQueue.cpp
+    ${OLD_DIR}/EventLoopThread.cpp
     )
 
 set(OLD_HEADERS
@@ -170,6 +171,7 @@ set(OLD_HEADERS
     ${OLD_DIR}/Timer.h
     ${OLD_DIR}/TimerId.h
     ${OLD_DIR}/TimerQueue.h
+    ${OLD_DIR}/EventLoopThread.h
     )
 
 add_library(oldlib
@@ -208,6 +210,16 @@ target_include_directories(test_timer
     PRIVATE
         ${OLD_INCLUDE})
 target_link_libraries(test_timer
+    PUBLIC
+        pthread baselib oldlib)
+
+
+add_executable(test_eventloopthread
+    ${OLD_DIR}/test/test_eventloopthread.cpp)
+target_include_directories(test_eventloopthread
+    PRIVATE
+        ${OLD_INCLUDE})
+target_link_libraries(test_eventloopthread
     PUBLIC
         pthread baselib oldlib)
 ########################################################################################OLD
