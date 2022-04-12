@@ -160,6 +160,10 @@ set(OLD_CPPS
     ${OLD_DIR}/Timer.cpp
     ${OLD_DIR}/TimerQueue.cpp
     ${OLD_DIR}/EventLoopThread.cpp
+    ${OLD_DIR}/SocketOps.cpp
+    ${OLD_DIR}/Socket.cpp
+    ${OLD_DIR}/InetAddress.cpp
+    ${OLD_DIR}/Acceptor.cpp
     )
 
 set(OLD_HEADERS
@@ -172,6 +176,11 @@ set(OLD_HEADERS
     ${OLD_DIR}/TimerId.h
     ${OLD_DIR}/TimerQueue.h
     ${OLD_DIR}/EventLoopThread.h
+    ${OLD_DIR}/Endian.h
+    ${OLD_DIR}/SocketOps.h
+    ${OLE_DIR}/Socket.h
+    ${OLD_DIR}/InetAddress.h
+    ${OLD_DIR}/Acceptor.h
     )
 
 add_library(oldlib
