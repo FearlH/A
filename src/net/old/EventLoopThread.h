@@ -13,14 +13,15 @@ namespace m2
         {
         public:
             using ThreadFunc = std::function<void()>;
-            EventLoopThread(const std::string &name = std::string());
+            using ThreadInitCallback = std::function<void(EventLoop *)>;
+            EventLoopThread(const ThreadInitCallback &callback = ThreadInitCallback(), const const std::string &name = std::string());
             ~EventLoopThread();
             EventLoop *strat();
 
         private:
             std::mutex mutex_;
             std::condition_variable cond_;
-            std::function<void(EventLoop *)> callback_;
+            ThreadInitCallback callback_;
             EventLoop *loop_;
             bool exiting_; //没有这个析构的时候不知道是不是开启了loop
             std::thread loopThread_;

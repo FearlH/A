@@ -164,6 +164,10 @@ set(OLD_CPPS
     ${OLD_DIR}/Socket.cpp
     ${OLD_DIR}/InetAddress.cpp
     ${OLD_DIR}/Acceptor.cpp
+    ${OLD_DIR}/TcpConnection.cpp
+    ${OLD_DIR}/TcpServer.cpp
+    ${OLD_DIR}/Buffer.cpp
+    ${OLD_DIR}/EventLoopThreadPool.cpp
     )
 
 set(OLD_HEADERS
@@ -181,6 +185,10 @@ set(OLD_HEADERS
     ${OLE_DIR}/Socket.h
     ${OLD_DIR}/InetAddress.h
     ${OLD_DIR}/Acceptor.h
+    ${OLD_DIR}/TcpConnection.h
+    ${OLD_DIR}/TcpServer.h
+    ${OLD_DIR}/Buffer.h
+    ${OLD_DIR}/EventLoopThreadPool.h
     )
 
 add_library(oldlib

@@ -3,22 +3,23 @@
 using namespace m2;
 using namespace net;
 
-EventLoopThread::EventLoopThread(const std::string &name)
+EventLoopThread::EventLoopThread(const ThreadInitCallback &callback, const std::string &name)
     : loop_(nullptr),
       exiting_(false),
+      callback_(callback),
       threadFunc_([this]
                   {
-                      EventLoop loop;
+                        EventLoop loop;//threadFunc这个就是在栈的上面，伴随Thread
                         if(this->callback_)
                         {
                            this->callback_(&loop);
                         }
-                      {
-                          std::unique_lock<std::mutex> ulocker(this->mutex_);
-                          this->loop_ = &loop;
-                          this->cond_.notify_one();
-                      }
-                      loop.loop(); }),
+                        {
+                            std::unique_lock<std::mutex> ulocker(this->mutex_);
+                            this->loop_ = &loop;
+                            this->cond_.notify_one();
+                        }
+                        loop.loop(); }),
       name_(name)
 
 {

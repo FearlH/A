@@ -32,6 +32,12 @@ namespace m2
             //别的线程执行的注册操作可以转移到本线程去执行
             // EventLoop里面存放Thread ID
             //可以判断是不是在当前的线程执行任务
+
+            /*
+            EventLoop *loop 可能会被其他的线程拿走，然后执行成员函数
+            muduo采用的方法是使用queueInLoop的方法，把任务加入loop所在的线程里面
+            在事件驱动的循环里面进行调用
+            */
         public:
             EventLoop();
             ~EventLoop();
