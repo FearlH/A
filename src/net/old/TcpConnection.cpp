@@ -44,6 +44,10 @@ TcpConnection::TcpConnection(EventLoop *loop,
       channel_(new Channel(loop, sockfd))
 
 {
+    //!因为是listen的loop创建一个TcpConnection到一个ioLoop的里面
+    //!构造函数是在listen线程里面执行的
+    //!所以不会去使用有关loop_的一些函数(不在一个线程里面)
+    //!会在后面调用runInLoop完成初始化
     channel_->setReadCallback(std::bind(&TcpConnection::handleRead, this, _1));
     channel_->setWriteCallbacks(std::bind(&TcpConnection::handleWrite, this));
     channel_->setCloseCallbacks(std::bind(&TcpConnection::handleClose, this));
@@ -206,4 +210,189 @@ void TcpConnection::shutdownInLoop() //用户不会调用这个函数
     {
         socket_->shutdownWrite();
     }
+}
+
+void TcpConnection::forceClose()
+{
+    if (state_ == kConnected || state_ == kDisconnecting)
+    {
+        setState(kDisconnecting);
+        loop_->queueInLoop(std::bind(&TcpConnection::forceCloseInLoop, shared_from_this()));
+    }
+}
+
+void TcpConnection::forceCloseWithDelay(double seconds)
+{
+    if (state_ == kConnected || state_ == kDisconnecting)
+    {
+        loop_->runAfter(seconds,
+                        makeWeakCallback(shared_from_this(), &TcpConnection::forceCloseInLoop));
+        //?把这个对象用weak_ptr绑定，这个对象的成员函数
+        //?delay之前有可能已经关闭了?
+    }
+}
+
+void TcpConnection::forceCloseInLoop()
+{
+    loop_->assertInLoopThread();
+    if (state_ == kConnected || state_ == kDisconnecting)
+    {
+        handleClose();
+    }
+}
+
+const char *TcpConnection::stateToString() const
+{
+    switch (state_)
+    {
+    case kDisconnected:
+        return "kDisconnected";
+    case kConnecting:
+        return "kConnecting";
+    case kConnected:
+        return "kConnected";
+    case kDisconnecting:
+        return "kDisconnecting";
+    default:
+        return "unknown state";
+    }
+}
+
+void TcpConnection::setTcpNoDelay(bool on)
+{
+    socket_->setTcpNoDelay(on);
+}
+
+void TcpConnection::startRead()
+{
+    loop_->runInLoop(std::bind(&TcpConnection::startReadInLoop, this));
+}
+
+void TcpConnection::startReadInLoop()
+{
+    loop_->assertInLoopThread();
+    if (!reading_ || !channel_->isReading())
+    {
+        channel_->enableReading();
+        reading_ = true;
+    }
+}
+
+void TcpConnection::stopRead()
+{
+    loop_->runInLoop(std::bind(&TcpConnection::stopReadInLoop, this));
+}
+
+void TcpConnection::stopReadInLoop()
+{
+    loop_->assertInLoopThread();
+    if (reading_ || channel_->isReading())
+    {
+        channel_->disableReading();
+        reading_ = false;
+    }
+}
+
+void TcpConnection::connectEstablished() //构造好了之后连接建立，然后就会调用这个函数
+{
+    loop_->assertInLoopThread();
+    assert(state_ == kConnecting);
+    setState(kConnected);
+    channel_->tie(shared_from_this());
+    channel_->enableReading();
+
+    connectionCallback_(shared_from_this());
+}
+
+void TcpConnection::connectDestroyed() //!从外面传进来的是shared_from_this,就是保留最后不被析构
+{
+    loop_->assertInLoopThread();
+    if (state_ == kConnected)
+    {
+        setState(kDisconnected);
+        channel_->disableAll();
+        connectionCallback_(shared_from_this()); //?断开连接也需要ConnectionCallback
+    }
+    channel_->remove();
+    //在这里正向析构
+}
+
+void TcpConnection::handleRead(Timestamp receiveTime)
+{
+    loop_->assertInLoopThread();
+    int savedErrno = 0;
+    ssize_t n = inputBuffer_.readFd(channel_->fd(), &savedErrno); //数据读到buffer的里面
+    if (n > 0)
+    {
+        messageCallback_(shared_from_this(), &inputBuffer_, receiveTime);
+    }
+    else if (n == 0) //读到0就说明是关闭了
+    {
+        handleClose();
+    }
+    else
+    {
+        errno = savedErrno;
+        LOG_SYSERR << "TcpConnection::handleRead";
+        handleError();
+    }
+}
+
+void TcpConnection::handleWrite() //开始的时候是直接写数据，在数据没有写完的时候才会注册handleWrite
+{
+    loop_->assertInLoopThread();
+    if (channel_->isWriting())
+    {
+        ssize_t nWrite = socket::write(channel_->fd(), outputBuffer_.peek(), outputBuffer_.readableBytes());
+        if (nWrite > 0)
+        {
+            outputBuffer_.retrieve(nWrite);
+            if (outputBuffer_.readableBytes() == 0)
+            {
+                channel_->disableWriting();
+                if (writeCompleteCallback_)
+                {
+                    loop_->queueInLoop(std::bind(&TcpConnection::writeCompleteCallback_, shared_from_this()));
+                }
+                if (state_ == kDisconnecting)
+                {
+                    shutdownInLoop(); //全部写完之后再去关闭
+                }
+            }
+        }
+        else //可写了，然后也没有写进去
+        {
+            LOG_SYSERR << "TcpConnection::handleWrite";
+            // if (state_ == kDisconnecting)
+            // {
+            //   shutdownInLoop();
+            // }
+        }
+    }
+    else
+    {
+        //出错，报告可写，但是Channle没有注册可写
+        LOG_TRACE << "Connection fd = " << channel_->fd()
+                  << " is down, no more writing";
+    }
+}
+
+void TcpConnection::handleClose()
+{
+    loop_->assertInLoopThread();
+    LOG_TRACE << "fd = " << channel_->fd() << " state = " << stateToString();
+    assert(state_ == kConnected || state_ == kDisconnecting);
+    TcpConnectionPtr guardThis = shared_from_this();
+    setState(kDisconnected);
+    channel_->disableAll();
+    connectionCallback_(guardThis);
+    closeCallback_(guardThis);
+    //!不关闭sockfd，等到析构的时候，会析构socket_,那个里面会关闭sockfd
+}
+
+void TcpConnection::handleError()
+{
+    int err = socket::getSocketError(channel_->fd());
+    LOG_ERROR << "TcpConnection::handleError [" << name_
+              << "] - SO_ERROR = " << err << " " << strerror_tl(err);
 }

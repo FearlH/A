@@ -14,7 +14,7 @@ namespace m2
         public:
             using ThreadFunc = std::function<void()>;
             using ThreadInitCallback = std::function<void(EventLoop *)>;
-            EventLoopThread(const ThreadInitCallback &callback = ThreadInitCallback(), const const std::string &name = std::string());
+            EventLoopThread(const ThreadInitCallback &callback = ThreadInitCallback(), const std::string &name = std::string());
             ~EventLoopThread();
             EventLoop *strat();
 

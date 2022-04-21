@@ -93,6 +93,7 @@ void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
     //这个函数是在acceptor_里面调用的
     //需要改变一下自己的状态，所以还会去bind自己
     loop_->assertInLoopThread();
+    //!会从ioLoop里面挑选一个然后把TcpConnection放进去(构造进去)
     EventLoop *ioLoop = threadPool_->getNextLoop();
     char buf[64];
     snprintf(buf, sizeof buf, "-%s#%d", ipPort_.c_str(), nextConnId_);
@@ -114,9 +115,16 @@ void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
     conn->setConnectionCallback(connectionCallback_);
     conn->setMessageCallback(messageCallback_);
     conn->setWriteCompleteCallback(writeCompleteCallback_);
+    //! CloseCallback这里设置，然后把TcpConnection从这个map里面移除
+    //! 因为不知道什么时候会关闭连接，所以需要回调函数
     conn->setCloseCallback(
         std::bind(&TcpServer::removeConnection, this, _1)); // FIXME: unsafe
     ioLoop->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
+    //构造好了之后连接建立，然后就会调用这个函数
+    //!因为是listen的loop创建一个TcpConnection到一个ioLoop的里面
+    //!构造函数是在listen线程里面执行的
+    //!所以不会去使用有关loop_的一些函数(不在一个线程里面)
+    //!会在后面调用runInLoop完成初始化
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr &conn)

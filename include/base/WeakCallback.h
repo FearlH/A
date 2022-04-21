@@ -35,13 +35,13 @@ private:
 template <typename CLASS, typename... ARGS>
 WeakCallback<CLASS, ARGS...> makeWeakCallback(const std::shared_ptr<CLASS> &sPtr, void (CLASS::*function)(ARGS...))
 {
-    return WeakCallback(sPtr, function);
+    return WeakCallback<CLASS, ARGS...>(sPtr, function);
 }
 
 template <typename CLASS, typename... ARGS>
 WeakCallback<CLASS, ARGS...> makeWeakCallback(const std::shared_ptr<CLASS> &sPtr, void (CLASS::*function)(ARGS...) const)
 {
-    return WeakCallback(sPtr, function);
+    return WeakCallback<CLASS, ARGS...>(sPtr, function);
 }
 
 #endif // WEAKCALLBACK_H

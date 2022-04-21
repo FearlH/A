@@ -146,6 +146,7 @@ namespace m2
                 assert(len <= readableBytes());
                 std::string res(peek(), len); //从一个地方开始，多长
                 retrieve(len);
+                return res;
             }
 
             StringPiece toStringPiece() const { return StringPiece(peek(), static_cast<int>(readableBytes())); }

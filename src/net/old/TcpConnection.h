@@ -51,29 +51,29 @@ namespace m2
             // // void send(Buffer&& message); // C++11
             void send(Buffer *message); // this one will swap data
             void shutdown();            // NOT thread safe, no simultaneous calling
-            // // void shutdownAndForceCloseAfter(double seconds); // NOT thread safe, no simultaneous calling
-            // void forceClose();
-            // void forceCloseWithDelay(double seconds);
-            // void setTcpNoDelay(bool on);
+            //// void shutdownAndForceCloseAfter(double seconds); // NOT thread safe, no simultaneous calling
+            void forceClose();
+            void forceCloseWithDelay(double seconds);
+            void setTcpNoDelay(bool on);
             // // reading or not
-            // void startRead();
-            // void stopRead();
-            // bool isReading() const { return reading_; }; // NOT thread safe, may race with start/stopReadInLoop
+            void startRead();
+            void stopRead();
+            bool isReading() const { return reading_; }; // NOT thread safe, may race with start/stopReadInLoop
 
-            // void setContext(const boost::any &context)
-            // {
-            //     context_ = context;
-            // }
+            void setContext(const boost::any &context)
+            {
+                context_ = context;
+            }
 
-            // const boost::any &getContext() const
-            // {
-            //     return context_;
-            // }
+            const boost::any &getContext() const
+            {
+                return context_;
+            }
 
-            // boost::any *getMutableContext()
-            // {
-            //     return &context_;
-            // }
+            boost::any *getMutableContext()
+            {
+                return &context_;
+            }
 
             void setConnectionCallback(const ConnectionCallback &cb)
             {
@@ -96,16 +96,16 @@ namespace m2
                 highWaterMark_ = highWaterMark;
             }
 
-            /// Advanced interface
-            // Buffer *inputBuffer()
-            // {
-            //     return &inputBuffer_;
-            // }
+            // Advanced interface
+            Buffer *inputBuffer()
+            {
+                return &inputBuffer_;
+            }
 
-            // Buffer *outputBuffer()
-            // {
-            //     return &outputBuffer_;
-            // }
+            Buffer *outputBuffer()
+            {
+                return &outputBuffer_;
+            }
 
             /// Internal use only.
             void setCloseCallback(const CloseCallback &cb)
@@ -133,13 +133,13 @@ namespace m2
             // // void sendInLoop(string&& message);
             void sendInLoop(const StringPiece &message);
             void sendInLoop(const void *message, size_t len);
-            void shutdownInLoop();  
+            void shutdownInLoop();
             // // void shutdownAndForceCloseInLoop(double seconds);
-            // void forceCloseInLoop();
+            void forceCloseInLoop();
             void setState(StateE s) { state_ = s; }
             const char *stateToString() const;
-            // void startReadInLoop();
-            // void stopReadInLoop();
+            void startReadInLoop();
+            void stopReadInLoop();
 
             EventLoop *loop_;
             const string name_;
@@ -158,7 +158,7 @@ namespace m2
             size_t highWaterMark_;
             Buffer inputBuffer_;
             Buffer outputBuffer_; // FIXME: use list<Buffer> as output buffer.
-            // boost::any context_;
+            boost::any context_;
             // FIXME: creationTime_, lastReceiveTime_
             //        bytesReceived_, bytesSent_
         };

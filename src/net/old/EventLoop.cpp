@@ -36,7 +36,6 @@ EventLoop::EventLoop() : looping_(false), threadId_(CurrentThread::tid()),
                          currentActiveChannel_(nullptr),
 
                          doingPendingNumCalls_(false),
-
                          timerQueue_(new TimerQueue(this)),
                          wakeupFd_(createEventfd()),
                          wakeupChannel_(new Channel(this, wakeupFd_))

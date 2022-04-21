@@ -3,6 +3,7 @@
 
 #include "base/Logging.h"
 #include "base/CurrentThread.h"
+#include "TimerId.h"
 #include "Callbacks.h"
 // #include "Poller.h"
 //不能在这个地方引入头文件
@@ -12,6 +13,9 @@
 //那么这个EventLoop里面就包含的Poller就不会包含EventLoop
 //导致之后的Poller使用EventLoop就是失效的
 //就需要后面的前置声明，而不是这个时候引入头文件
+
+#include <boost/any.hpp>
+
 #include <assert.h>
 #include <memory>
 #include <vector>
@@ -111,22 +115,22 @@ namespace m2
             // // bool callingPendingFunctors() const { return callingPendingFunctors_; }
             bool eventHandling() const { return eventHandling_; }
 
-            // void setContext(const boost::any &context)
-            // {
-            //     context_ = context;
-            // }
+            void setContext(const boost::any &context)
+            {
+                context_ = context;
+            }
 
-            // const boost::any &getContext() const
-            // {
-            //     return context_;
-            // }
+            const boost::any &getContext() const
+            {
+                return context_;
+            }
 
-            // boost::any *getMutableContext()
-            // {
-            //     return &context_;
-            // }
+            boost::any *getMutableContext()
+            {
+                return &context_;
+            }
 
-            // static EventLoop *getEventLoopOfCurrentThread();
+            static EventLoop *getEventLoopOfCurrentThread();
 
         private:
             const pid_t threadId_; //对象属于的线程的id
@@ -151,7 +155,7 @@ namespace m2
             // // unlike in TimerQueue, which is an internal class,
             // // we don't expose Channel to client.
             std::unique_ptr<Channel> wakeupChannel_;
-            // boost::any context_;
+            boost::any context_;
 
             // // scratch variables
             ChannelList activeChannels_;
