@@ -147,48 +147,54 @@ target_link_libraries(baselib
 
 
 ##########################################################################################OLD
-SET(OLD_DIR
-    ${PROJECT_SOURCE_DIR}/src/net/old)
+SET(OLD_DIR_HEADER
+    ${PROJECT_SOURCE_DIR}/include/net)
+set(OLD_DIR_CPP
+    ${PROJECT_SOURCE_DIR}/src/net)
 
 set(OLD_CPPS
-    ${OLD_DIR}/EventLoop.cpp
-    ${OLD_DIR}/Channel.cpp
-    ${OLD_DIR}/Callbacks.cpp
-    ${OLD_DIR}/Poller.cpp
-    ${OLD_DIR}/EpollPoller.cpp
-    ${OLD_DIR}/defaultPoller.cpp
-    ${OLD_DIR}/Timer.cpp
-    ${OLD_DIR}/TimerQueue.cpp
-    ${OLD_DIR}/EventLoopThread.cpp
-    ${OLD_DIR}/SocketOps.cpp
-    ${OLD_DIR}/Socket.cpp
-    ${OLD_DIR}/InetAddress.cpp
-    ${OLD_DIR}/Acceptor.cpp
-    ${OLD_DIR}/TcpConnection.cpp
-    ${OLD_DIR}/TcpServer.cpp
-    ${OLD_DIR}/Buffer.cpp
-    ${OLD_DIR}/EventLoopThreadPool.cpp
+    ${OLD_DIR_CPP}/EventLoop.cpp
+    ${OLD_DIR_CPP}/Channel.cpp
+    ${OLD_DIR_CPP}/Callbacks.cpp
+    ${OLD_DIR_CPP}/Poller.cpp
+    ${OLD_DIR_CPP}/EpollPoller.cpp
+    ${OLD_DIR_CPP}/defaultPoller.cpp
+    ${OLD_DIR_CPP}/Timer.cpp
+    ${OLD_DIR_CPP}/TimerQueue.cpp
+    ${OLD_DIR_CPP}/EventLoopThread.cpp
+    ${OLD_DIR_CPP}/SocketOps.cpp
+    ${OLD_DIR_CPP}/Socket.cpp
+    ${OLD_DIR_CPP}/InetAddress.cpp
+    ${OLD_DIR_CPP}/Acceptor.cpp
+    ${OLD_DIR_CPP}/TcpConnection.cpp
+    ${OLD_DIR_CPP}/TcpServer.cpp
+    ${OLD_DIR_CPP}/Buffer.cpp
+    ${OLD_DIR_CPP}/EventLoopThreadPool.cpp
+    ${OLD_DIR_CPP}/TcpClient.cpp
+    ${OLD_DIR_CPP}/Connector.cpp
     )
 
 set(OLD_HEADERS
-    ${OLD_DIR}/EventLoop.h
-    ${OLD_DIR}/Channel.h
-    ${OLD_DIR}/Callbacks.h
-    ${OLD_DIR}/Poller.h
-    ${OLD_DIR}/EpollPoller.h
-    ${OLD_DIR}/Timer.h
-    ${OLD_DIR}/TimerId.h
-    ${OLD_DIR}/TimerQueue.h
-    ${OLD_DIR}/EventLoopThread.h
-    ${OLD_DIR}/Endian.h
-    ${OLD_DIR}/SocketOps.h
-    ${OLE_DIR}/Socket.h
-    ${OLD_DIR}/InetAddress.h
-    ${OLD_DIR}/Acceptor.h
-    ${OLD_DIR}/TcpConnection.h
-    ${OLD_DIR}/TcpServer.h
-    ${OLD_DIR}/Buffer.h
-    ${OLD_DIR}/EventLoopThreadPool.h
+    ${OLD_DIR_HEADER}/EventLoop.h
+    ${OLD_DIR_HEADER}/Channel.h
+    ${OLD_DIR_HEADER}/Callbacks.h
+    ${OLD_DIR_HEADER}/Poller.h
+    ${OLD_DIR_HEADER}/EpollPoller.h
+    ${OLD_DIR_HEADER}/Timer.h
+    ${OLD_DIR_HEADER}/TimerId.h
+    ${OLD_DIR_HEADER}/TimerQueue.h
+    ${OLD_DIR_HEADER}/EventLoopThread.h
+    ${OLD_DIR_HEADER}/Endian.h
+    ${OLD_DIR_HEADER}/SocketOps.h
+    ${OLD_DIR_HEADER}/Socket.h
+    ${OLD_DIR_HEADER}/InetAddress.h
+    ${OLD_DIR_HEADER}/Acceptor.h
+    ${OLD_DIR_HEADER}/TcpConnection.h
+    ${OLD_DIR_HEADER}/TcpServer.h
+    ${OLD_DIR_HEADER}/Buffer.h
+    ${OLD_DIR_HEADER}/EventLoopThreadPool.h
+    ${OLD_DIR_HEADER}/TcpCLient.h
+    ${OLD_DIR_HEADER}/Connector.h
     )
 
 add_library(oldlib
@@ -200,7 +206,7 @@ target_include_directories(oldlib
 
 target_include_directories(oldlib
     PUBLIC
-        ${OLD_DIR})
+        ${OLD_DIR_HEADER})
 
 target_link_libraries(oldlib
     PUBLIC
@@ -210,32 +216,32 @@ target_link_libraries(oldlib
 
 
 # set(OLD_INCLUDE
-#     ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
+#     ${PROJECT_SOURCE_DIR}/include ${OLD_DIR_HEADER})
 
 # add_executable(test_eventloop
-#     ${OLD_DIR}/test/test_eventloop.cpp ${OLD_DIR}/EventLoop.cpp)
+#     ${OLD_DIR_HEADER}/test/test_eventloop.cpp ${OLD_DIR_HEADER}/EventLoop.cpp)
 # target_include_directories(test_eventloop
 #     PUBLIC
-#         ${PROJECT_SOURCE_DIR}/include ${OLD_DIR})
+#         ${PROJECT_SOURCE_DIR}/include ${OLD_DIR_HEADER})
 # target_link_libraries(test_eventloop
 #     PRIVATE
 #         pthread baselib)
 
 add_executable(test_timer
-    ${OLD_DIR}/test/test_timer.cpp)
+    ${OLD_DIR_CPP}/test/test_timer.cpp)
 target_include_directories(test_timer
     PRIVATE
-        ${OLD_INCLUDE})
+        ${OLD_DIR_HEADER})
 target_link_libraries(test_timer
     PUBLIC
         pthread baselib oldlib)
 
 
 add_executable(test_eventloopthread
-    ${OLD_DIR}/test/test_eventloopthread.cpp)
+    ${OLD_DIR_CPP}/test/test_eventloopthread.cpp)
 target_include_directories(test_eventloopthread
     PRIVATE
-        ${OLD_INCLUDE})
+        ${OLD_DIR_HEADER})
 target_link_libraries(test_eventloopthread
     PUBLIC
         pthread baselib oldlib)

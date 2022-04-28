@@ -1,4 +1,4 @@
-#include "Channel.h"
+#include "net/Channel.h"
 
 #include <assert.h>
 #include <sstream>

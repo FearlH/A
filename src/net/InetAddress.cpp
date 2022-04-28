@@ -1,8 +1,8 @@
-#include "InetAddress.h"
+#include "net/InetAddress.h"
 
 #include "base/Logging.h"
-#include "Endian.h"
-#include "SocketOps.h"
+#include "net/Endian.h"
+#include "net/SocketOps.h"
 #include "base/Types.h"
 
 #include <netdb.h>

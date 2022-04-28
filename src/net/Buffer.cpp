@@ -1,5 +1,5 @@
-#include "Buffer.h"
-#include "SocketOps.h"
+#include "net/Buffer.h"
+#include "net/SocketOps.h"
 
 #include <errno.h>
 #include <sys/uio.h>

@@ -1,7 +1,7 @@
-#include "SocketOps.h"
+#include "net/SocketOps.h"
 #include "base/Logging.h"
 #include "base/Types.h"
-#include "Endian.h"
+#include "net/Endian.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <fcntl.h>
