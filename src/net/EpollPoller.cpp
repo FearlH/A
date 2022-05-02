@@ -51,7 +51,7 @@ void EpollPoller::updateChannel(Channel *channel)
         channel->setIndex(KAdded);
         updateInEpoll(EPOLL_CTL_ADD, channel);
     }
-    else
+    else // KAdded
     {
         assert(fd_Channels_.find(fd) != fd_Channels_.end());
         assert(fd_Channels_[fd] == channel);
@@ -59,6 +59,7 @@ void EpollPoller::updateChannel(Channel *channel)
         if (channel->isNoneEvent())
         {
             updateInEpoll(EPOLL_CTL_DEL, channel);
+            channel->setIndex(KDeleted);
         }
         else
         {

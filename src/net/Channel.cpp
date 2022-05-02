@@ -46,7 +46,7 @@ void Channel::tie(const std::shared_ptr<void> &toTie)
 
 void Channel::remove()
 {
-    assert(!isNoneEvent());
+    assert(isNoneEvent());
     addedToLoop_ = false;
     loop_->removeChannel(this);
 }

@@ -134,6 +134,12 @@ void TcpConnection::send(Buffer *buf)
     }
 }
 
+void TcpConnection::sendInLoop(const StringPiece &message)
+{
+    loop_->assertInLoopThread();
+    sendInLoop(message.data(), message.size());
+}
+
 void TcpConnection::sendInLoop(const void *data, size_t len)
 {
     loop_->assertInLoopThread();

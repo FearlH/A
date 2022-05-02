@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <sys/uio.h>
+#include <unistd.h>
 
 using namespace m2;
 using namespace m2::net;
@@ -123,7 +125,7 @@ ssize_t socket::readv(int sockfd, const struct iovec *iov, int iovcnt)
 }
 ssize_t socket::write(int sockfd, const void *buf, size_t count)
 {
-    return write(sockfd, buf, count);
+    return ::write(sockfd, buf, count);
 }
 
 void socket::close(int sockfd)

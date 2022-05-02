@@ -52,8 +52,7 @@ namespace m2
             void set_revents(int revt) { revents_ = revt; }            // used by pollers
             bool isNoneEvent() const { return events_ == kNoneEvent; } //注册的是啥都没有那就是不需要观察了，可以从Epoll里面移除
 
-            void
-            enableReading()
+            void enableReading()
             {
                 events_ |= kReadEvent;
                 update();

@@ -44,6 +44,7 @@
 #include <iosfwd> // for ostream forward-declaration
 
 #include "Types.h"
+#include <string>
 
 namespace m2
 {
@@ -85,7 +86,7 @@ namespace m2
         StringPiece(const unsigned char *str)
             : ptr_(reinterpret_cast<const char *>(str)),
               length_(static_cast<int>(strlen(ptr_))) {}
-        StringPiece(const string &str)
+        StringPiece(const std::string &str)
             : ptr_(str.data()), length_(static_cast<int>(str.size())) {}
         StringPiece(const char *offset, int len)
             : ptr_(offset), length_(len) {}

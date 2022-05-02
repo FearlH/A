@@ -25,7 +25,8 @@ TcpServer::TcpServer(EventLoop *loop,
       acceptor_(new Acceptor(loop, listenAddr, op == KReusePort)),
       threadPool_(new EventLoopThreadPool(loop, nameArg)),
       connectionCallback_(defaultConnectionCallback),
-      messageCallback_(defaultMessageCallback)
+      messageCallback_(defaultMessageCallback),
+      started_(0)
 
 {
     acceptor_->setNewConnectionCallBack(

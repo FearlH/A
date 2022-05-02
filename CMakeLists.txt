@@ -197,20 +197,22 @@ set(OLD_HEADERS
     ${OLD_DIR_HEADER}/Connector.h
     )
 
-add_library(oldlib
+add_library(netlib
     ${OLD_CPPS})
 
-target_include_directories(oldlib
+target_include_directories(netlib
     PUBLIC
         ${PROJECT_SOURCE_DIR}/include)
 
-target_include_directories(oldlib
+target_include_directories(netlib
     PUBLIC
         ${OLD_DIR_HEADER})
 
-target_link_libraries(oldlib
+target_link_libraries(netlib
     PUBLIC
         baselib)
+
+
 
 
 
@@ -234,7 +236,7 @@ target_include_directories(test_timer
         ${OLD_DIR_HEADER})
 target_link_libraries(test_timer
     PUBLIC
-        pthread baselib oldlib)
+        pthread baselib netlib)
 
 
 add_executable(test_eventloopthread
@@ -244,5 +246,44 @@ target_include_directories(test_eventloopthread
         ${OLD_DIR_HEADER})
 target_link_libraries(test_eventloopthread
     PUBLIC
-        pthread baselib oldlib)
+        pthread baselib netlib)
+
+
+
+set(INCLUDE_DIR
+    ${PROJECT_SOURCE_DIR}/include)
+set(EXAMPLE_DIR
+    ${PROJECT_SOURCE_DIR}/src/examples)
+
+
+add_executable(echo_server
+    ${EXAMPLE_DIR}/echo/server/echo_server.cpp ${EXAMPLE_DIR}/echo/server/main.cpp)
+target_link_libraries(echo_server
+    PRIVATE
+        baselib netlib pthread)
+target_include_directories(echo_server
+    PRIVATE
+        ${INCLUDE_DIR} ${EXAMPLE_DIR}/echo/server)
+
+
+
+add_executable(echo_client
+    ${EXAMPLE_DIR}/echo/client/echo_client.cpp ${EXAMPLE_DIR}/echo/client/main.cpp)
+target_link_libraries(echo_client
+    PRIVATE
+        baselib netlib pthread)
+target_include_directories(echo_client
+    PRIVATE
+        ${INCLUDE_DIR} ${EXAMPLE_DIR}/echo/client)
+
+add_executable(finger
+    ${EXAMPLE_DIR}/finger/finger.cpp)
+target_include_directories(finger
+    PRIVATE
+        ${INCLUDE_DIR} ${EXAMPLE_DIR}/finger/)
+target_link_libraries(finger
+    PRIVATE
+        baselib netlib)
+
+
 ########################################################################################OLD
